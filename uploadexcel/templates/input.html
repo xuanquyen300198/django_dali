@@ -1,0 +1,12 @@
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="file" name="import_excle">
+    <input type="submit" name="upload_excel">Upload</input>
+  </form>
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="file" name="import_img">
+    <input type="submit" name="upload_img">Upload Img</input>
+  </form>

@@ -1,0 +1,309 @@
+{% extends "pages/base.html" %}
+{% load static %}
+{% block title %}
+    Xử lý điểm ảnh
+{% endblock %}
+{% block button_process %}
+    <ul class="navbar-nav">
+
+        <li class="nav-item">
+            <button type="button" id="button-excel" class="btn btn-outline-primary mx-1" data-toggle="modal" data-target="#myModal_excel">
+                Dữ liệu ảnh
+            </button>
+        </li>
+
+        <li class="nav-item">
+            <button id="button-img" type="button" class="btn btn-outline-primary mx-1" data-toggle="modal" data-target="#myModal_image">
+                Đọc file ảnh
+            </button>
+        </li>
+
+        <li class="nav-item">
+            <form method="post" enctype="multipart/form-data" id="excel-download">
+              {% csrf_token %}
+              <input id="upload_excel-btn" type="submit" name="upload_excel-btn" value="Download dữ liệu ảnh" class="btn btn-outline-primary mx-1" />
+            </form>
+        </li>
+        <li class="nav-item">
+            <button id="button-img" type="button" class="btn btn-outline-primary mx-1" data-toggle="modal" data-target="#myModal_profile">
+               Tài khoản
+            </button>
+        </li>
+    </ul>
+{% endblock %}
+{% block content%}
+<section class="bg-gradient d-flex align-items-center py-2">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-6 col-md-7">\
+            <h1 class="text-white">Hướng dẫn sử dụng</h1>
+            <p class="lead text-white">
+              Chi tiết hướng dẫn sử dụng Module gợi ý màu trong chuỗi dự án Dali
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <div class="row justify-content-center">
+              <div class="col-md-12 col-lg-12">
+
+                <article id="components">
+                  <h3 class="h4">
+                    <p>Component Demos</p>
+                  </h3>
+                  <div>
+                    <p>To view a list of the available styled components with markup examples, see <a href="../components-insight.html">Insight Components</a> and <a href="../components-bootstrap.html">Bootstrap Components</a>.</p>
+
+                  </div>
+                </article>
+
+                <article id="setting-up-dev-tools">
+                  <h3 class="h4">
+                    <p>Setting up Dev Tools</p>
+                  </h3>
+                  <div>
+                    <p>Unzip the theme package to any folder and open a command line at that location. </p>
+                    <p>Insight's dev tools require <a href="https://nodejs.org/">Node</a>, <a href="https://www.atlassian.com/git/tutorials/install-git">Git</a>, and the <a href="https://gulpjs.com/">Gulp CLI</a> package. Assuming you have Node and Git installed, the following command installs Gulp Command Line Utility globally so the <code>gulp</code> command can be used anywhere in your system.</p>
+                    <pre class="  language-bash"><code class="  language-bash">npm install gulp-cli -g
+                    </code></pre>
+                    <p>When you have installed Gulp, run <code>npm install</code> and the required packages for the Insight dev tools will be downloaded to the <code>node_modules</code> directory.</p>
+                    <pre class="  language-bash"><code class="  language-bash">npm install
+                    </code></pre>
+                    <p>Insight employs <a href="https://www.browsersync.io/">Browsersync</a> to serve pages from the <code>dist</code> directory. Running <code>gulp</code> will compile the theme, copy all required files to the <code>dist</code> directory and will open a browser window to <code>dist/index.html</code>.</p>
+                    <pre class="  language-bash"><code class="  language-bash">gulp
+                    </code></pre>
+                    <p>While Gulp is running, Files in the <code>pages</code>, <code>scss</code> and <code>js</code> folders are monitored for changes, which will inject updated CSS or cause a refresh in Browsersync.</p>
+                    <p>Hit Ctrl+C or just close the command line window to stop the server.</p>
+
+                  </div>
+                </article>
+
+                <article id="support">
+                  <h3 class="h4">
+                    <p>How to get support</p>
+                  </h3>
+                  <div>
+                    <p>Medium Rare provides support for bugfixes and guidance on using the theme.</p>
+                    <p>To access support, find the support link in your Bootstrap Themes dashboard.</p>
+
+                  </div>
+                </article>
+
+                <article id="feedback">
+                  <h3 class="h4">
+                    <p>Giving Feedback</p>
+                  </h3>
+                  <div>
+                    <p>We strive to improve our products and we rely on feedback from our customers.</p>
+                    <p>Please feel free to share any feedback about Insight via twitter <a href="https://twitter.com/mrareweb">@mrareweb</a> or feedback(at)mrare.co.</p>
+
+                  </div>
+                </article>
+
+              </div>
+            </div>
+      </div>
+    </section>
+    <!-- The Modal -->
+    <div class="modal" id="myModal_excel">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Import dữ liệu ảnh</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <form method="post" enctype="multipart/form-data" id="excel-form">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="pwd">File excel:</label>
+                        <input type="file" class="form-control" name="import_excle" placeholder="File excel" id="pwd">
+                    </div>
+                    <div class="alert alert-success" id="alert-excel-done" style="display:none">
+                      <strong>Thành công!</strong> Upload dữ liệu ảnh thành công.
+                    </div>
+                    <div class="alert alert-warning" id="alert-excel-fail" style="display:none">
+                      <strong>Thất bại!</strong> Upload dữ liệu ảnh thất bại.
+                    </div>
+                    <input id="upload_excel" type="submit" name="upload_excel" value="Upload Excel" class="btn btn-primary" />
+                    <button class="btn btn-primary" id="load-excel" style="display:none">
+                        <span class="spinner-border spinner-border-sm"></span>
+                        Loading..
+                    </button>
+                    <label id="download_exl" for="#file_ex" class="btn btn-primary" style="display:none">Download file</label>
+                    <input id="#file_ex" type="submit" name="download_excel" class="btn btn-primary" style="display:none;"/>
+                </form>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal" id="myModal_image">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Import ảnh</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <form method="post" enctype="multipart/form-data" id="img-form">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="pwImg">File ảnh:</label>
+                        <input type="file" class="form-control" name="import_img" id="import_img" placeholder="File image" id="pwImg">
+                    </div>
+                    <div class="alert alert-success" id="alert-img-done" style="display:none">
+                      <strong>Thành công!</strong> Upload ảnh thành công.
+                    </div>
+                    <div class="alert alert-warning" id="alert-img-fail" style="display:none">
+                      <strong>Thất bại!</strong> Upload ảnh thất bại.
+                    </div>
+                    <input type="submit" id ="upload_img" name="upload_img" value="Upload Image" class="btn btn-primary" />
+                      <button class="btn btn-primary" id="load-ding" style="display:none">
+                        <span class="spinner-border spinner-border-sm"></span>
+                        Loading..
+                      </button>
+                    <label id="download-img" for="#file_img" class="btn btn-primary" style="display:none">Download ảnh</label>
+                    <input id="#file_img" type="submit" name="download_image" class="btn btn-primary" style="display:none;margin-top: 8px;"/>
+                </form>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="myModal_profile">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Xin chào: {{user}}</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body">
+                <span ><a  class="hello-msg" href="{% url 'logout' %}">Đăng xuất</a></span>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        //upload img
+        $('#upload_img').on('click', function(e){
+          e.preventDefault();
+          var fileInput = document.getElementById('import_img');
+          var filePath = fileInput.value;
+          var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif)$/i;
+          if(!allowedExtensions.exec(filePath)){
+              alert('Ảnh không đúng địng dạng (.jpeg/.jpg/.png/.gif).');
+              //fileInput.value = '';
+              return false;
+          }else{
+              var data = new FormData($('#img-form').get(0));
+              $('#load-ding').attr('style','display: ""');
+              $.ajax({
+                  type : "POST", 
+                  url: "/home/post/img",
+                  contentType: 'multipart/form-data',
+                  processData: false,
+                  contentType: false,
+                  data: data,
+                  success: function(data){
+                    if(data.data=='0000'){
+                      $('#alert-img-done').attr('style','display: ""');
+                      setTimeout(function(){
+                        document.getElementById("alert-img-done").style.display = "none"; 
+                      }, 1000);
+                      $('#load-ding').attr('style','display: none');
+                      $('#download-img').attr('style','display: "";margin-top: 8px;');
+                    }else{
+                      $('#alert-img-fail').attr('style','display: ""');
+                      setTimeout(function(){
+                        document.getElementById("alert-img-fail").style.display = "none"; 
+                      }, 1000);
+                    }
+                    
+                  },
+
+                  failure: function() {
+                      
+                  }
+              });
+          }
+        });
+        $('#button-img').on('click', function(e){
+          $('#download-img').attr('style','display: none');
+        });
+        //upload excel
+        $('#upload_excel').on('click', function(e){
+            e.preventDefault();
+            var fileInput = document.getElementById('upload_excel');
+            var filePath = fileInput.value;
+            var allowedExtensions = /(\.xlsx)$/i;
+            if(!allowedExtensions.exec(filePath)){
+                alert('Dữ liệu ảnh không đúng định dạng (.xlsx).');
+                //fileInput.value = '';
+                return false;
+            }else{
+              var data = new FormData($('#excel-form').get(0));
+              $('#load-excel').attr('style','display: ""');
+              $.ajax({
+                type : "POST", 
+                url: "/home/post/excel",
+                contentType: 'multipart/form-data',
+                processData: false,
+                contentType: false,
+                data: data,
+                success: function(data){
+                  if(data.data=='0000'){
+                    $('#alert-excel-done').attr('style','display: ""');
+                    setTimeout(function(){
+                      document.getElementById("alert-img-done").style.display = "none"; 
+                    }, 1000);
+                    $('#load-excel').attr('style','display: none');
+                    $('#download_exl').attr('style','display: "";margin-top: 8px;');
+                  }else{
+                    $('#alert-excel-fail').attr('style','display: ""');
+                    setTimeout(function(){
+                      document.getElementById("alert-img-done").style.display = "none"; 
+                    }, 1000);
+                  }
+                  
+                },
+
+                failure: function() {
+                    
+                }
+            });
+          }
+        });
+      $('#button-excel').on('click', function(e){
+        $('#download_exl').attr('style','display: none');
+      });
+    </script>
+{% endblock %}
