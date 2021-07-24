@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.shortcuts import render, redirect
-
+from django.core.exceptions import FieldDoesNotExist
 from django.shortcuts import render
 from django.http import HttpResponse
 import pandas as pd
