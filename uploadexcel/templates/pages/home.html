@@ -52,54 +52,78 @@
 
                 <article id="components">
                   <h3 class="h4">
-                    <p>Component Demos</p>
+                    <p>Hướng dẫn sử dụng Module</p>
                   </h3>
-                  <div>
-                    <p>To view a list of the available styled components with markup examples, see <a href="../components-insight.html">Insight Components</a> and <a href="../components-bootstrap.html">Bootstrap Components</a>.</p>
-
+                  <div class="container">
+                    <div class="col-md-12 col-lg-12">
+                      <a href="#excel1" data-toggle="collapse">B1. Tải dữ liệu ảnh lên database</a>
+                      <div id="excel1" class="collapse">
+                        <p>- Click nút "Dữ liệu ảnh".</p>
+                        <p>- Chọn file Excel chứa dữ liệu cần tải lên.</p>
+                        <p>- Tải file Excel chứa dữ liệu để thực hiện tra cứu.</p>
+                      </div>
+                    </div>
+                    <div class="col-md-12 col-lg-12">
+                      <a href="#image"  data-toggle="collapse">B2. Đọc file ảnh</a>
+                      <div id="image" class="collapse">
+                        <p>- Click nút "Đọc file ảnh".</p>
+                        <p>- Chọn file ảnh cần đọc.</p>
+                        <p>- Tải file ảnh chứa dữ liệu để thực hiện tra cứu</p>
+                      </div>
+                    </div>
+                    <div class="col-md-12 col-lg-12">
+                      <a href="#DownExcel"  data-toggle="collapse">Tải về dữ liệu ảnh</a>
+                      <div id="DownExcel" class="collapse">
+                        <p>- Click nút "Download dữ liệu ảnh".</p>
+                      </div>
+                    </div>
                   </div>
                 </article>
 
                 <article id="setting-up-dev-tools">
                   <h3 class="h4">
-                    <p>Setting up Dev Tools</p>
+                    <p>Cài đặt Dev Tools</p>
                   </h3>
                   <div>
-                    <p>Unzip the theme package to any folder and open a command line at that location. </p>
-                    <p>Insight's dev tools require <a href="https://nodejs.org/">Node</a>, <a href="https://www.atlassian.com/git/tutorials/install-git">Git</a>, and the <a href="https://gulpjs.com/">Gulp CLI</a> package. Assuming you have Node and Git installed, the following command installs Gulp Command Line Utility globally so the <code>gulp</code> command can be used anywhere in your system.</p>
-                    <pre class="  language-bash"><code class="  language-bash">npm install gulp-cli -g
-                    </code></pre>
-                    <p>When you have installed Gulp, run <code>npm install</code> and the required packages for the Insight dev tools will be downloaded to the <code>node_modules</code> directory.</p>
+                    <p>Cài đặt NodeJS và NPM , run <code>npm install</code> </p>
                     <pre class="  language-bash"><code class="  language-bash">npm install
                     </code></pre>
-                    <p>Insight employs <a href="https://www.browsersync.io/">Browsersync</a> to serve pages from the <code>dist</code> directory. Running <code>gulp</code> will compile the theme, copy all required files to the <code>dist</code> directory and will open a browser window to <code>dist/index.html</code>.</p>
-                    <pre class="  language-bash"><code class="  language-bash">gulp
+                    <p>Tiếp theo cài đặt môi trường Python.</p>
+                    <pre class="  language-bash"><code class="  language-bash">python setup.py -install
                     </code></pre>
-                    <p>While Gulp is running, Files in the <code>pages</code>, <code>scss</code> and <code>js</code> folders are monitored for changes, which will inject updated CSS or cause a refresh in Browsersync.</p>
-                    <p>Hit Ctrl+C or just close the command line window to stop the server.</p>
-
+                    <p>IDE để lập trình Django <a href="https://code.visualstudio.com/">Visual Studio Code</a> là ide hỗ trợ quản lý source code dễ dàng và nhiều extension giúp tăng tốc động làm việc.</p>
+                    </code></pre>
+                    <p>Cài đặt thư viện Django.</p>
+                    <pre class="  language-bash"><code class="  language-bash">pip install django
+                    </code></pre>
+                    <p>Ta sẽ mở terminal trong Project lên, ta có thể dùng VS Code để mở Terminal:</p>
+                    <pre class="  language-bash"><code class="  language-bash">django-admin startproject <span><</span>Tên Project >
+                    </code></pre>
+                    <p>Bây giờ ta sẽ gõ cú pháp sau để khởi động server ảo.</p>
+                    <pre class="  language-bash"><code class="  language-bash">python manage.py runserver
+                    </code></pre>
+                    <p>Mở trình duyệt truy cập vào localhost:8000 để xem kết quả.</p>
                   </div>
                 </article>
 
                 <article id="support">
                   <h3 class="h4">
-                    <p>How to get support</p>
+                    <p>Cách nhận hỗ trợ</p>
                   </h3>
                   <div>
-                    <p>Medium Rare provides support for bugfixes and guidance on using the theme.</p>
-                    <p>To access support, find the support link in your Bootstrap Themes dashboard.</p>
+                    <p>Gửi yêu cầu hỗ trợ về hòm thư: eopdevtech@gmail.com .</p>
+                    <p>Truy cập trực tiếp vào website: <a href="https://eoptech.info/">https://eoptech.info/</a> để nhận hỗ trợ trực tiếp của nhân viên.</p>
 
                   </div>
                 </article>
 
                 <article id="feedback">
                   <h3 class="h4">
-                    <p>Giving Feedback</p>
+                    <p>Gửi phản hồi</p>
                   </h3>
                   <div>
-                    <p>We strive to improve our products and we rely on feedback from our customers.</p>
-                    <p>Please feel free to share any feedback about Insight via twitter <a href="https://twitter.com/mrareweb">@mrareweb</a> or feedback(at)mrare.co.</p>
-
+                    <p>Gửi yêu phản hồi về hòm thư: eopdevtech@gmail.com .</p>
+                    <p>Truy cập trực tiếp vào website: <a href="https://eoptech.info/">https://eoptech.info/</a> để phản hồi về chất lượng dịch vụ.</p>
                   </div>
                 </article>
 
@@ -123,8 +147,8 @@
                 <form method="post" enctype="multipart/form-data" id="excel-form">
                     {% csrf_token %}
                     <div class="form-group">
-                        <label for="pwd">File excel:</label>
-                        <input type="file" class="form-control" name="import_excle" placeholder="File excel" id="pwd">
+                        <label for="import_excle">File excel:</label>
+                        <input type="file" class="form-control" name="import_excle" placeholder="File excel" id="import_excle">
                     </div>
                     <div class="alert alert-success" id="alert-excel-done" style="display:none">
                       <strong>Thành công!</strong> Upload dữ liệu ảnh thành công.
@@ -227,7 +251,7 @@
               var data = new FormData($('#img-form').get(0));
               $('#load-ding').attr('style','display: ""');
               $.ajax({
-                  type : "POST", 
+                  type : "POST",
                   url: "/home/post/img",
                   contentType: 'multipart/form-data',
                   processData: false,
@@ -237,32 +261,33 @@
                     if(data.data=='0000'){
                       $('#alert-img-done').attr('style','display: ""');
                       setTimeout(function(){
-                        document.getElementById("alert-img-done").style.display = "none"; 
+                        document.getElementById("alert-img-done").style.display = "none";
                       }, 1000);
                       $('#load-ding').attr('style','display: none');
                       $('#download-img').attr('style','display: "";margin-top: 8px;');
                     }else{
                       $('#alert-img-fail').attr('style','display: ""');
                       setTimeout(function(){
-                        document.getElementById("alert-img-fail").style.display = "none"; 
+                        document.getElementById("alert-img-fail").style.display = "none";
                       }, 1000);
                     }
-                    
+
                   },
 
                   failure: function() {
-                      
+
                   }
               });
           }
         });
         $('#button-img').on('click', function(e){
           $('#download-img').attr('style','display: none');
+          $("#import_img").val("");
         });
         //upload excel
         $('#upload_excel').on('click', function(e){
             e.preventDefault();
-            var fileInput = document.getElementById('upload_excel');
+            var fileInput = document.getElementById('import_excle');
             var filePath = fileInput.value;
             var allowedExtensions = /(\.xlsx)$/i;
             if(!allowedExtensions.exec(filePath)){
@@ -273,7 +298,7 @@
               var data = new FormData($('#excel-form').get(0));
               $('#load-excel').attr('style','display: ""');
               $.ajax({
-                type : "POST", 
+                type : "POST",
                 url: "/home/post/excel",
                 contentType: 'multipart/form-data',
                 processData: false,
@@ -283,27 +308,28 @@
                   if(data.data=='0000'){
                     $('#alert-excel-done').attr('style','display: ""');
                     setTimeout(function(){
-                      document.getElementById("alert-img-done").style.display = "none"; 
+                      document.getElementById("alert-excel-done").style.display = "none";
                     }, 1000);
                     $('#load-excel').attr('style','display: none');
                     $('#download_exl').attr('style','display: "";margin-top: 8px;');
                   }else{
                     $('#alert-excel-fail').attr('style','display: ""');
                     setTimeout(function(){
-                      document.getElementById("alert-img-done").style.display = "none"; 
+                      document.getElementById("alert-excel-done").style.display = "none";
                     }, 1000);
                   }
-                  
+
                 },
 
                 failure: function() {
-                    
+
                 }
             });
           }
         });
       $('#button-excel').on('click', function(e){
         $('#download_exl').attr('style','display: none');
+        $("#import_excle").val("");
       });
     </script>
 {% endblock %}

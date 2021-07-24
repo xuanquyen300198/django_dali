@@ -5,9 +5,7 @@ from django.shortcuts import render, redirect
 
 from django.shortcuts import render
 from django.http import HttpResponse
-from tablib import Dataset
 import pandas as pd
-import xlwt
 import os
 
 from django.conf import settings
@@ -18,7 +16,7 @@ from django import db
 from uploadexcel.models import table_color_fomat
 from uploadexcel.models import table_color_tmp
 from io import StringIO
-import sqlalchemy as sa
+
 # library of img
 import cv2
 from PIL import Image
@@ -29,6 +27,8 @@ from django.http import FileResponse
 import urllib, mimetypes
 from wsgiref.util import FileWrapper
 from django.http import JsonResponse
+import re
+
 # Login
 from django.contrib.auth import authenticate, login, logout
 
@@ -49,6 +49,19 @@ def rgb2hex(r, g, b):
     # return '#{:02x}{:02x}{:02x}'.format(r, g, b)
     return '{:02x}{:02x}{:02x}'.format(r, g, b)
 
+def hexToRgb(hex):
+    return tuple(int(hex[i:i+2], 16) for i in (0, 2, 4))
+
+def nearest_colour( subjects, query ):
+    listObj = sorted( subjects, key = lambda subject: sum( (s - q) ** 2 for s, q in zip( subject, query ) ) )
+    code_dali = ""
+    for item in listObj:
+        (r,g,b,hex) = item
+        hexDali = table_color_fomat.objects.filter(code_hex=hex.upper()).order_by('number_img').last()
+        if hexDali !=None:
+            code_dali = hexDali.code_dali + "(n - " + hex +" )"
+            break
+    return code_dali
 @login_required(login_url='login')
 def home(request):
     user = request.user
@@ -104,12 +117,11 @@ def postImg(request):
             y2=420
             x1=580
             x2=780
-            img=cv2.imread("."+str(uploaded_file_url))
+            img=cv2.imread(str(os.path.join(settings.MEDIA_ROOT, imgPath.name)))
             (h,w,d) = img.shape
             scaleW = (round(w/780, 3))
             scaleH = (round(h/420, 3))
             scaleDe = 1
-            tbc =  1
             if w < 780:
                 width=420
                 height=780
@@ -119,12 +131,6 @@ def postImg(request):
                 x2=420
                 scaleW = (round(w/420, 3))
                 scaleH = (round(h/780, 3))
-            if scaleW > scaleH:
-                tbc = round((scaleW-scaleH)/2,3)
-                scaleDe = scaleH + tbc
-            else:
-                tbc = round((scaleH-scaleW)/2,3)
-                scaleDe = scaleW + tbc
             img = cv2.copyMakeBorder(img, 0, 0, 0, 0, cv2.BORDER_CONSTANT, value=[255,255,255])  
             img=cv2.resize(img,(width,height)) #resize image            
             roi = img[y1:y2, x1:x2] #region of interest i.e where the rectangles will be
@@ -134,28 +140,38 @@ def postImg(request):
             #Find my contours
             contours =cv2.findContours(Canny,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)[0]
 
-            cntrRect = []
+            # get list tuple rgb in db
+            resultsHex = list(table_color_fomat.objects.values_list('code_rgb'))
+            resultsHexStr = str(resultsHex).replace('("',"")
+            resultsHexStr = resultsHexStr.replace('",)'," ")
+            
+            listRgbCode = tuple(list(eval(resultsHexStr)))
+
             for i in contours:
                     epsilon = 0.05*cv2.arcLength(i,True)
                     approx = cv2.approxPolyDP(i,epsilon,True)
                     if len(approx) == 4:                       
-                        if cv2.contourArea(i) > 300*scaleDe:
+                        if cv2.contourArea(i) > 300:
                             M = cv2.moments(i)
                             if M["m00"] != 0:
                                 cX = int((M["m10"] / M["m00"]) )
                                 cY = int((M["m01"] / M["m00"]) )     
-                                (b,r,g) = rgb_of_pixel("."+str(uploaded_file_url),int(int(cX)*scaleW),int(int(cY)*scaleH))                        
+                                (b,r,g) = rgb_of_pixel(str(os.path.join(settings.MEDIA_ROOT, imgPath.name)),int(int(cX)*scaleW),int(int(cY)*scaleH))                        
                                 
                                 listHexDali = table_color_fomat.objects.filter(code_hex=rgb2hex(b,r,g).upper()).order_by('number_img').last()
                                 if listHexDali !=None:
-                                    code_dali = listHexDali.code_dali
+                                    code_dali = listHexDali.code_dali + "(d)"
                                 else:
-                                    code_dali = rgb2hex(b,r,g)
+                                    code_dali_tmp = nearest_colour(listRgbCode,(b,r,g))
+                                    if code_dali_tmp == "":
+                                        code_dali = rgb2hex(b,r,g) + "(h)"
+                                    else:
+                                        code_dali = code_dali_tmp 
                                 cv2.putText(img, str(code_dali), (cX + 35, cY+8),
-                                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
+                                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
             # save into store
             img2 = cv2.copyMakeBorder(img, 40, 40, 40,40, cv2.BORDER_CONSTANT, value=[255,255,255])  
-            cv2.imwrite('./media/result_img.jpg', img2)
+            cv2.imwrite(settings.MEDIA_ROOT+'/result_img.jpg', img2)
             # delete img into media
             if fs.exists(imgPath.name):
                 os.remove(os.path.join(settings.MEDIA_ROOT, imgPath.name)) 
@@ -171,53 +187,50 @@ def postImg(request):
 @login_required(login_url='login')
 def postExcel(request):
     if request.is_ajax and request.method == "POST":
-        # dataset = Dataset()
         new_dataLst = request.FILES['import_excle']
-        # imported_data = dataset.load(new_dataLst.read(),format='xlsx')
         dfIn = pd.read_excel(new_dataLst)
         # change column
         old_names = dfIn.columns
         new_names = ['code_dali', 'code_hex', 'color', 'code_img',]
         dfIn.rename(columns=dict(zip(old_names, new_names)), inplace=True)
         dfIn.drop('color', axis=1, inplace=True)
+       
+        # lay du lieu db
         tmp_list = table_color_tmp.objects.all()
         pdTmp = pd.DataFrame([x.as_dict() for x in tmp_list])
+        
+        # kiem tra trung truoc insert
+        if pdTmp.empty:
+            for item in dfIn.itertuples():
+                item = table_color_tmp.objects.create(
+                    code_hex=item.code_hex,
+                    code_dali=item.code_dali,
+                    code_img= item.code_img
+                    )
+                item.save()
+        else:
+            dInsert = pd.merge(dfIn,pdTmp , on=['code_dali','code_hex','code_img'], how='left', indicator='Exist')
+            # dInsert.drop('color', inplace=True, axis=1)
+            dInsert['Exist'] = np.where(dInsert.Exist == 'both', True, False)
+            # insert table tmp
+            for item in dInsert.itertuples():
+                if item.Exist == False:
+                    item = table_color_tmp.objects.create(
+                        code_hex=item.code_hex,
+                        code_dali=item.code_dali,
+                        code_img= item.code_img
+                        )
+                    item.save()
         df = read_data(pdTmp,dfIn)
-
-        # output = StringIO()
-        # df.to_csv(output, sep=';', header=False, index=False, columns=df.columns)
-        # output.getvalue()
-        # # jump to start of stream
-        # output.seek(0)
-        # engine = sa.create_engine("django.db.backends.sqlite3")
-        # # Insert df into postgre
-        # connection = engine.raw_connection()
-        # with connection.cursor() as cursor:
-        #     cursor.copy_from(output, "table_color_tmp", sep=';', null="NULL", columns=(df.columns))
-        #     connection.commit()
-
-        df = df.drop_duplicates( subset = ['code_dali', 'code_img','code_img'], keep = 'last').reset_index(drop = True) 
-
-        # insert table tmp
-        for itemImg in df.itertuples():
-            itemImg = table_color_tmp.objects.create(
-                code_hex=itemImg.code_hex,
-                code_dali=itemImg.code_dali,
-                code_img= itemImg.code_img
-                )
-            itemImg.save()
-
-        # totalImg = len(df.groupby('code_img'))
-
+        
         # filter rows group by code_hex and code_img
         daliData = df.groupby(['code_dali','code_img']).size().reset_index(name='count')
         # # count code_hex By code_img
         daliData['code_img'] = daliData.groupby('code_dali').transform('count')
-        dataExport1=daliData.drop_duplicates('code_dali')
+        dataExport1 = daliData.drop_duplicates('code_dali')
         dataExport1 = dataExport1.sort_values(by=['code_img'], ascending=False)
         dataExport1.drop('count', axis=1, inplace=True)
-        
-        
+       
         # filter rows group by code_hex and code_dali
         hexDaliData = df.groupby(['code_hex','code_dali']).size().reset_index(name='count')
         # join hexDaliData dataExport1
@@ -227,13 +240,23 @@ def postExcel(request):
         # delete 
         table_color_fomat.objects.all().delete()
         # insert table format
-        for itemImg in dataExport2.itertuples():
-            itemImg = table_color_fomat.objects.create(
-                code_hex=itemImg.code_hex,
-                code_dali=itemImg.code_dali,
-                number_img= itemImg.code_img
-                )
-            itemImg.save()
+        if dataExport2.empty:
+            print("empty")
+        else: 
+            for itemImg in dataExport2.itertuples():
+                match = re.search(r'^(?:[0-9a-fA-F]{3}){1,2}$', str(itemImg.code_hex))    
+                if match and str(itemImg.code_hex)!="nan":
+                    rgb = hexToRgb(str(itemImg.code_hex)) + (str(itemImg.code_hex),)
+                    itemImg = table_color_fomat.objects.create(
+                        code_hex=itemImg.code_hex,
+                        code_dali=itemImg.code_dali,
+                        number_img= itemImg.code_img,
+                        code_rgb=rgb
+                        )
+                    itemImg.save()
+                else:
+                    print("hex: ", str(itemImg.code_hex))
+                    continue 
         # rename to export
         old_names1 = dataExport1.columns
         new_names1 = ['mã màu dali', 'số ảnh']
@@ -244,7 +267,7 @@ def postExcel(request):
         dataExport2.rename(columns=dict(zip(old_names2, new_names2)), inplace=True)
         dataExport2.reset_index(drop=True, inplace=True)
         # export excel
-        with pd.ExcelWriter('./media/bangMau.xlsx') as writer:  
+        with pd.ExcelWriter(settings.MEDIA_ROOT+'/bangMau.xlsx') as writer:  
             dataExport1.to_excel(writer, sheet_name='Sheet1')
             dataExport2.to_excel(writer, sheet_name='Sheet2')
         return JsonResponse({"data": "0000"})
