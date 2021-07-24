@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
-from django.core.exceptions import FieldDoesNotExist
 from __future__ import unicode_literals
 
 from django.db import models
-
+from django.core.exceptions import FieldDoesNotExist
 # Create your models here.
 class table_color_tmp(models.Model):
     code_hex = models.CharField(max_length=100)
